@@ -18,12 +18,13 @@
       C:\Users\Administrator\anaconda3\Library\bin
       C:\Users\Administrator\anaconda3\Library
       C:\Users\Administrator\anaconda3\Scripts
-8. CMD 창에서 [conda] 입력
-9. [conda create -n py39 python=3.9] 입력
+8. 바탕화면에 [PTU]폴더 생성
+9. CMD 창에서 [PTU] 폴더로 이동후 [conda] 입력
+10. [conda create -n py39 python=3.9] 입력
    가상환경 만들기
-10. 시작하기 명령어 : conda activate py39
-    종료하기 명령어 : conda deactivate
-11. 바탕화면에 [PTU]폴더 생서
+   process(y/n)? -> yes 입력
+11. 시작하기 명령어 : conda activate py39
+    종료하기 명령어 : conda deactivate 
 12. [PTU]폴더를 오른쪽 클릭하여 추가옵션 선택
 13. VS 코드 열기 선택
 14. 열린 VS코드에 v00_install_anaconda폴더 생성

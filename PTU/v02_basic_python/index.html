@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>kg → pound 변환기</title>
+  <style>
+    body{font-family:Segoe UI,Arial,Helvetica,sans-serif;margin:2rem}
+    label,input,button{font-size:1rem}
+    input{width:8rem;margin-right:.5rem}
+    #result{margin-top:1rem;font-weight:600}
+  </style>
+</head>
+<body>
+  <h1>kg → pound 변환기</h1>
+  <label for="kg">무게 (kg):</label>
+  <input id="kg" type="number" step="any" placeholder="예: 5.5" />
+  <button id="convert">변환</button>
+  <p id="result" aria-live="polite"></p>
+
+  <script>
+    const factor = 2.20462;
+    const kgInput = document.getElementById('kg');
+    const btn = document.getElementById('convert');
+    const result = document.getElementById('result');
+
+    function convert() {
+      const v = kgInput.value.trim();
+      if (v === '') { result.textContent = 'kg 값을 입력하세요.'; return; }
+      const kg = Number(v);
+      if (Number.isNaN(kg)) { result.textContent = '오류: 숫자만 입력할 수 있습니다. 문자는 넣지 마세요.'; return; }
+      const pound = kg * factor;
+      result.textContent = `${kg}kg은 ${pound.toFixed(3)}pound 입니다.`;
+    }
+
+    btn.addEventListener('click', convert);
+    kgInput.addEventListener('keyup', (e) => { if (e.key === 'Enter') convert(); });
+  </script>
+</body>
+</html>

@@ -53,4 +53,4 @@ def print_colored(sentence:str = "hellow", color = None, on_color = None, style:
                              style)
     print(color_sentence) 
 
-print_colored("Hellow", "red", "on_yellow", ["bold"])
+print_colored("Hello", "red", "on_yellow", ["bold"])
