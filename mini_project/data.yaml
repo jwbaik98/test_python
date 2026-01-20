@@ -1,0 +1,6 @@
+path: C:/Users/Administrator/Desktop/PTU/v17_mini_project # 프로젝트 절대 경로
+train: 1.Training/TS5_표고  # 학습 데이터 (이미지 + txt가 있는 곳)
+val: 2.Validation/VS5_표고   # 검증 데이터 
+
+nc: 3                       # 클래스 수 (배양, 병해, 생육)
+names: ['Culture', 'Disease', 'Growth'] # 순서대로 배양=0, 병해=1, 생육=2
