@@ -1,6 +1,10 @@
-path: C:/Users/Administrator/Desktop/PTU/v17_mini_project # 프로젝트 절대 경로
-train: 1.Training/TS5_표고  # 학습 데이터 (이미지 + txt가 있는 곳)
-val: 2.Validation/VS5_표고   # 검증 데이터 
+# data.yaml 예시
+path: C:/Users/Administrator/Desktop/PTU/v17_mini_project  # 프로젝트 루트 경로
+train: C:/Users/Administrator/Desktop/PTU/v17_mini_project/0. Dataset/1.Training/TS5_표고   # images 폴더가 들어있는 세부 경로
+val: C:/Users/Administrator/Desktop/PTU/v17_mini_project/0. Dataset/2.Validation/VS5_표고     # validation 사진이 들어있는 세부 경로
+test: # (없으면 비워둠)
 
-nc: 3                       # 클래스 수 (배양, 병해, 생육)
-names: ['Culture', 'Disease', 'Growth'] # 순서대로 배양=0, 병해=1, 생육=2
+names:
+  0: Culture
+  1: Growth
+  2: Disease
