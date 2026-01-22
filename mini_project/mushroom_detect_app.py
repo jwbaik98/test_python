@@ -17,17 +17,33 @@ def apply_custom_css(theme):
     
     st.markdown(f"""
         <style>
-        header {{ visibility: hidden; height: 0px !important; }}
-        .block-container {{ padding-top: 0px !important; }}
-        .stApp {{ background-color: {bg}; color: {txt}; }}
-        .main-header {{ background: {c_bg}; padding: 12px; border-radius: 0 0 20px 20px; border: 1px solid {bord}; text-align: center; margin-bottom: 15px; }}
+        /* 헤더 전체를 숨기지 않고, 내부의 불필요한 요소만 조정 */
+        [data-testid="stHeader"] {{
+            background: rgba(0,0,0,0); /* 투명하게 설정 */
+        }}
         
-        /* 이미지 크기 고정 (스크롤 방지) */
+        /* 사이드바 열기/닫기 버튼은 보이도록 설정 */
+        [data-testid="stSidebarNav"] {{
+            padding-top: 2rem;
+        }}
+        
+        /* 메인 컨테이너 패팅 조정 */
+        .block-container {{ padding-top: 2rem !important; }}
+        
+        .stApp {{ background-color: {bg}; color: {txt}; }}
+        .main-header {{ background: {c_bg}; padding: 12px; border-radius: 15px; border: 1px solid {bord}; text-align: center; margin-bottom: 15px; }}
+        
+        /* 이미지 크기 고정 */
         .stImage img {{ max-height: 400px; object-fit: contain; width: auto !important; margin: 0 auto; display: block; }}
         
         [data-testid="stSidebar"] {{ background-color: {s_bg} !important; }}
         [data-testid="stSidebar"] * {{ color: {txt} !important; }}
-        [data-testid="stFileUploader"] button {{ color: {txt} !important; border: 1px solid {bord} !important; }}
+        
+        /* 사이드바 내 버튼 색상 강제 지정 (다크모드 대응) */
+        button[kind="secondary"] {{
+            color: {txt} !important;
+        }}
+
         .result-card {{ background: {c_bg}; padding: 10px; border-radius: 10px; border: 1px solid {bord}; margin-bottom: 8px; }}
         .mode-status {{ background: #4A90E2; color: white !important; padding: 5px; border-radius: 5px; text-align: center; font-weight: bold; }}
         </style>
@@ -109,69 +125,15 @@ if mode == "📸 사진 분석":
                 """, unsafe_allow_html=True)
 
 elif mode == "📹 실시간 영상":
-    st.write("### 📹 실시간 관찰 및 상태 진단")
+    st.write("### 📹 실시간 관찰")
     run = st.toggle("카메라 가동")
-    
-    col1, col2 = st.columns([1, 1])
-    with col1:
-        win = st.empty()
-    with col2:
-        st.write("### 📊 실시간 리포트")
-        report_placeholder = st.empty()
-
+    win = st.image([])
     if run:
         vid = cv2.VideoCapture(0)
-        cnt = 0 
-        # 초기 메시지 설정 (메모리 절약을 위해 단순 문자열 사용)
-        last_report = '<div style="color:gray; text-align:center;">버섯을 비춰주세요.</div>'
-        
         while run:
             ret, frame = vid.read()
             if not ret: break
-            
-            cnt += 1
-            # 1. 영상 출력 (성능을 위해 2프레임에 한 번만 모델 예측 수행 권장)
-            if cnt % 2 == 0:
-                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                res = model.predict(frame_rgb, conf=conf_v, iou=iou_v, verbose=False)
-                win.image(res[0].plot(), use_container_width=True)
-                
-                boxes = res[0].boxes
-                
-                # 2. 리포트 업데이트 (5프레임에 한 번만 수행하여 메모리 보호)
-                if len(boxes) > 0 and cnt % 5 == 0:
-                    items = []
-                    items.append(f'<div style="background:#4A90E2; color:white; padding:8px; border-radius:10px; margin-bottom:10px; font-weight:bold; text-align:center;">탐지: {len(boxes)}개</div>')
-                    
-                    # 최대 5개만 처리 (메모리 과부하 방지)
-                    for i, box in enumerate(boxes[:5]): 
-                        raw_label = model.names[int(box.cls[0])].lower()
-                        score = float(box.conf[0]) * 100
-                        
-                        # 생육 일수 계산
-                        xyxy = box.xyxy[0].tolist()
-                        size = np.sqrt((xyxy[2]-xyxy[0])**2 + (xyxy[3]-xyxy[1])**2)
-                        
-                        if 'dis' in raw_label:
-                            k_name, s_color, detail = "병해", "#FF5252", "방제 필요"
-                        elif 'cul' in raw_label or 'norm' in raw_label:
-                            k_name, s_color, detail = "배양", "#4A90E2", "상태 양호"
-                        else:
-                            k_name, s_color = "생육", "#4CAF50"
-                            days = int(7 + (size / 60))
-                            detail = f"생육 {min(days, 14)}일차"
-
-                        items.append(f"""
-                        <div style="border-left: 4px solid {s_color}; padding:5px 10px; border-radius:5px; margin-bottom:5px; background:rgba(128,128,128,0.05); font-size:13px;">
-                            <b>#{i+1} {k_name}</b> | {score:.1f}%<br>
-                            <span style="color:#666; font-size:12px;">{detail}</span>
-                        </div>
-                        """)
-                    
-                    # 리스트를 합쳐 메모리에 저장
-                    last_report = "".join(items)
-            
-            # 3. 화면 업데이트 (탐지되지 않아도 마지막 결과 유지)
-            report_placeholder.markdown(last_report, unsafe_allow_html=True)
-                
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            r = model.predict(frame, conf=conf_v)
+            win.image(r[0].plot(), use_container_width=True)
         vid.release()
