@@ -1,31 +1,27 @@
 @echo off
-:: 한글 깨짐 방지를 위해 인코딩을 UTF-8(65001)로 설정
 chcp 65001 > nul
-
 title Mushroom AI Diagnosis Service
+
+:: 1. 현재 배치 파일 위치로 이동
+cd /d "%~dp0"
+
+:: 2. 가상환경의 파이썬 경로 설정
+:: py310 폴더가 배치파일과 같은 곳에 있다면 아래 경로가 맞습니다.
+set PYTHON_EXE=%~dp0py310\Scripts\python.exe
+
+:: 만약 가상환경이 다른 곳에 있다면 실제 경로로 수정하세요.
+:: 예: set PYTHON_EXE=C:\Users\Administrator\anaconda3\envs\py310\python.exe
+
 echo ==================================================
-echo [시스템] 표고버섯 AI 진단 서비스를 시작합니다...
+echo [시스템] 가상환경을 사용하여 서비스를 시작합니다...
 echo ==================================================
 
-:: 1. 현재 배치 파일이 있는 폴더로 경로 이동
-cd /d %~dp0
+:: 3. 가상환경의 파이썬으로 streamlit 실행
+:: 'app' 폴더 안의 'mushroom_detect_app.py'를 실행합니다.
+"%PYTHON_EXE%" -m streamlit run app\mushroom_detect_app.py
 
-:: 2. 가상환경 확인 및 활성화
-if exist .v17_mini_project\Scripts\activate (
-    echo [정보] 가상환경을 활성화하는 중입니다.
-    call .v17_mini_project\Scripts\activate
-) else (
-    echo [경고] .v17_mini_project폴더를 찾을 수 없습니다. 파이썬 환경을 확인하세요.
-    pause
-    exit
-)
-
-:: 3. Streamlit 실행
-echo [진행] 웹 브라우저가 곧 실행됩니다. 잠시만 기다려 주세요...
-streamlit mushroom_detect_app.py
-
-:: 만약 바로 꺼진다면 에러 확인을 위해 일시정지
 if %errorlevel% neq 0 (
-    echo [에러] 프로그램 실행 중 문제가 발생했습니다.
+    echo.
+    echo ❌ [에러] 실행에 실패했습니다. 라이브러리가 설치되었는지 확인하세요.
     pause
 )
